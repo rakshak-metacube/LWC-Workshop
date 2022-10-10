@@ -10,11 +10,6 @@ global with sharing class ShoppingCartService {
     }
 
     @AuraEnabled(cacheable=true)
-    global static List<Product2> getProductByName(String name){
-        return service().getProductByName(name);
-    }
-
-    @AuraEnabled(cacheable=true)
     global static List<Product2> getSelectByIds(String idSet){
         List<ID> ids=(List<ID>)JSON.deserialize(idSet, List<ID>.class);
         return service().selectById(ids);
@@ -31,7 +26,6 @@ global with sharing class ShoppingCartService {
                 productItem.add(item);
                 total=total+(Integer)(item.get('Total'));
             }
-            //List<any> orders=(List<Object>)JSON.deserialize(items, List<Object>.class);
             system.debug(total);
             Id i=service().insertPurchase(total);
             service().insertPurchaseLineItem(i, productItem);

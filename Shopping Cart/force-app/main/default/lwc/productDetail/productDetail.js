@@ -1,6 +1,5 @@
 import { LightningElement, wire,track,api } from 'lwc';
 import getAllProduct from '@salesforce/apex/ShoppingCartService.getAllProduct';
-import getProductByName from '@salesforce/apex/ShoppingCartService.getProductByName';
 
 
 const COLS=[
@@ -12,7 +11,6 @@ const COLS=[
 
 export default class ProductDetail extends LightningElement {
     @track products=null
-    msg='once'
     columns=COLS
     @track record=null
     hideCheckBox=true
@@ -69,25 +67,6 @@ export default class ProductDetail extends LightningElement {
         });
         this.products=[...this.products];
         this.pageNumber=1;
-        /**const productName=event.target.value;
-        if(productName){
-            getProductByName({name:productName})
-            .then(result=>{
-                console.log(result);
-                this.products=result;
-                this.pageNumber=1;
-            })
-            .catch(error=>{console.log(error)})
-        }
-        else{
-            getAllProduct()
-            .then(result=>{
-                console.log(result);
-                this.products=result;
-                this.pageNumber=1;
-            })
-            .catch(error=>{console.log(error)});
-        }**/
     }
     handleAddToCart(){ 
         if(this.preSelectedRecord.length==0){
@@ -95,7 +74,6 @@ export default class ProductDetail extends LightningElement {
         }
         else{
         this.showCart=true;
-        this.msg='repeat';
         for(let i = 0; i < this.preSelectedRecord.length; ++i) {
             let prod=this.record.find(e=>e.Id==this.preSelectedRecord[i]);
             if(prod.Quantity__c>0){

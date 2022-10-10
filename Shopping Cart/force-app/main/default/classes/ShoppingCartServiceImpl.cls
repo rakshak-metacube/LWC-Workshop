@@ -5,9 +5,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService{
     public List<Product2> getAllProduct(){
         return new ProductSelector().getAllProduct();
     }
-    public List<Product2> getProductByName(String name){
-        return new ProductSelector().getProductByName(name);
-    }
+    
     public List<Product2> selectById(List<ID> idSet){
         return new ProductSelector().selectById(idSet);
     }

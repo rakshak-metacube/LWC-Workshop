@@ -14,10 +14,6 @@ public class ProductSelector extends fflib_SObjectSelector implements IProductSe
     public List<Product2> getAllProduct(){
         return [SELECT Id,Name,Price__c,ProductCode,Quantity__c FROM Product2];
     }
-    public List<Product2> getProductByName(String name){
-        name='%'+name+'%';
-        return [SELECT Id,Name,Price__c,ProductCode,Quantity__c FROM Product2 WHERE Name LIKE :name ];
-    }
     public List<Product2> selectById(List<ID> idSet){
         return [SELECT Id,Name,Price__c,ProductCode,Quantity__c FROM Product2 WHERE ID in :idSet];
     }
