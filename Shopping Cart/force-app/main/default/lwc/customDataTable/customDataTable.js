@@ -1,43 +1,41 @@
-import { LightningElement,api,track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class CustomDataTable extends LightningElement {
-    @api columns=[]
-    @track deleteRecord={}
-    @api hideCheckBox= !false
-    @api showRowNumCol= !false
-    @api sortBy='';
-    @api sortDirection='';
+    @api columns = []
+    @track deleteRecord = {}
+    @api hideCheckBox = !false
+    @api showRowNumCol = !false
+    @api sortBy = '';
+    @api sortDirection = '';
     _records
-    @api preSelectedRows=[]
+    @api preSelectedRows = []
     @api draftValues = [];
     @api isShowModal = false;
-    hasRerender=true;
+    hasRerender = true;
     totalRecords = 0 //Total no.of records
-    pageSize=10 //No.of records to be displayed per page
+    pageSize = 10 //No.of records to be displayed per page
     totalPages //Total no.of pages
-    rowOffset=0
-    @api pageNumber=1 //Page number    
+    rowOffset = 0
+    @api pageNumber = 1 //Page number    
     @track recordsToDisplay //Records to be displayed on the page
-    connectedCallback(){
+    connectedCallback() {
         this.totalRecords = this._records.length; // update total records count  
-        this.hasRerender=false;
-        this.paginationHelper();  
+        this.hasRerender = false;
+        this.paginationHelper();
 
     }
-    renderedCallback(){
-        console.log('rerender callback');
-    }
     @api
-    get records(){
+    get records() {
         return this._records;
     }
-    set records(value){
-        this._records=[];
-        this._records=[...value];
-        this.pageNumber=1;
+    set records(value) {
+        this._records = [];
+        this._records = [...value];
+        this.pageNumber = 1;
         this.totalRecords = this._records.length;
-        this.rowOffset=0;
-        this.paginationHelper(); 
+        this.rowOffset = 0;
+        this.paginationHelper();
     }
     get bDisableFirst() {
         return this.pageNumber == 1;
@@ -48,27 +46,27 @@ export default class CustomDataTable extends LightningElement {
     previousPage() {
 
         this.pageNumber = this.pageNumber - 1;
-        this.preSelectedRows=JSON.parse(JSON.stringify(this.preSelectedRows));
-        this.rowOffset-=10;
+        this.preSelectedRows = JSON.parse(JSON.stringify(this.preSelectedRows));
+        this.rowOffset -= 10;
         this.paginationHelper();
     }
     nextPage() {
 
         this.pageNumber = this.pageNumber + 1;
-        this.preSelectedRows=JSON.parse(JSON.stringify(this.preSelectedRows));
-        this.rowOffset+=10;
+        this.preSelectedRows = JSON.parse(JSON.stringify(this.preSelectedRows));
+        this.rowOffset += 10;
         this.paginationHelper();
     }
     firstPage() {
-        this.rowOffset=0;
+        this.rowOffset = 0;
         this.pageNumber = 1;
-        this.preSelectedRows=JSON.parse(JSON.stringify(this.preSelectedRows));
+        this.preSelectedRows = JSON.parse(JSON.stringify(this.preSelectedRows));
         this.paginationHelper();
     }
     lastPage() {
-        this.rowOffset=10*(this.totalPages-1);
+        this.rowOffset = 10 * (this.totalPages - 1);
         this.pageNumber = this.totalPages;
-        this.preSelectedRows=JSON.parse(JSON.stringify(this.preSelectedRows));
+        this.preSelectedRows = JSON.parse(JSON.stringify(this.preSelectedRows));
         this.paginationHelper();
     }
     paginationHelper() {
@@ -88,78 +86,86 @@ export default class CustomDataTable extends LightningElement {
             }
             toDisplay.push(this.records[i]);
         }
-        this.recordsToDisplay=toDisplay;
+        this.recordsToDisplay = toDisplay;
     }
 
-    handleSave(event){
+    handleSave(event) {
         //this.draftValues=[]
-        this.dispatchEvent(new CustomEvent('save',{detail:{draft:event.detail.draftValues,pageNumber:this.pageNumber}}));
+        this.dispatchEvent(new CustomEvent('save', { detail: { draft: event.detail.draftValues, pageNumber: this.pageNumber } }));
     }
 
-    handleRowSelection(event){
+    handleRowSelection(event) {
         event.preventDefault();
-        let selectedRecords =JSON.parse(JSON.stringify(event.detail.selectedRows));
-        let localPreSelected=[...this.preSelectedRows];
-        if(selectedRecords.length >= 0){
-        this.recordsToDisplay.forEach(element=>{
-            if((selectedRecords.find(ele=>ele.Id===element.Id))===undefined){
-                if(localPreSelected.find(elem=>elem===element.Id)){
-                    
-                    localPreSelected=localPreSelected.filter(e=>e!=element.Id);
-                     
+        let selectedRecords = JSON.parse(JSON.stringify(event.detail.selectedRows));
+        let localPreSelected = [...this.preSelectedRows];
+        if (selectedRecords.length >= 0) {
+            this.recordsToDisplay.forEach(element => {
+                if ((selectedRecords.find(ele => ele.Id === element.Id)) === undefined) {
+                    if (localPreSelected.find(elem => elem === element.Id)) {
+
+                        localPreSelected = localPreSelected.filter(e => e != element.Id);
+
+                    }
                 }
-            }
-            else{
-                if((localPreSelected.find(ele=>ele===element.Id))===undefined){
-                    localPreSelected.push(element.Id);
+                else {
+                    if ((localPreSelected.find(ele => ele === element.Id)) === undefined) {
+                        localPreSelected.push(element.Id);
+                    }
                 }
-            }
-        });
-        this.preSelectedRows=localPreSelected;
-    }
-        this.dispatchEvent(new CustomEvent('change',{detail:{selected:this.preSelectedRows,pageNumber:this.pageNumber}}));
+            });
+            this.preSelectedRows = localPreSelected;
+        }
+        this.dispatchEvent(new CustomEvent('change', { detail: { selected: this.preSelectedRows, pageNumber: this.pageNumber } }));
     }
 
-    handleRowAction(event){
+    handleRowAction(event) {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
-        switch(actionName){
+        switch (actionName) {
             case 'Delete':
-                this.deleteRecord=row;
+                this.deleteRecord = row;
                 this.isShowModal = true;
         }
     }
-    hideModalBox(){
-        this.isShowModal=false;
+    hideModalBox() {
+        this.isShowModal = false;
     }
-    handleDeleteRecord(){
-        this.dispatchEvent(new CustomEvent('delete',{detail:{deleteRecord:this.deleteRecord,pageNumber:this.pageNumber}}));
+    handleDeleteRecord() {
+        this.dispatchEvent(new CustomEvent('delete', { detail: { deleteRecord: this.deleteRecord, pageNumber: this.pageNumber } }));
     }
-    doSorting(event){
+    doSorting(event) {
         this.sortBy = event.detail.fieldName;
         this.sortDirection = event.detail.sortDirection;
         let parseData = JSON.parse(JSON.stringify(this._records));
         let keyValue = (a) => {
             return a[this.sortBy];
         };
-        let isReverse = this.sortDirection === 'asc' ? 1: -1;
+        let isReverse = this.sortDirection === 'asc' ? 1 : -1;
         parseData.sort((x, y) => {
             x = keyValue(x) ? keyValue(x) : ''; // handling null values
             y = keyValue(y) ? keyValue(y) : '';
             // sorting values based on direction
-            if(typeof x==='string'){
-                if(x<y){
-                    return isReverse*-1;
+            if (typeof x === 'string') {
+                if (x < y) {
+                    return isReverse * -1;
                 }
-                else{
-                    return isReverse*1;
+                else {
+                    return isReverse * 1;
                 }
             }
-            else{
-            return isReverse * (x - y);
+            else {
+                return isReverse * (x - y);
             }
         });
-        this._records=parseData;
+        this._records = parseData;
         this.paginationHelper();
+    }
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(event);
     }
 }

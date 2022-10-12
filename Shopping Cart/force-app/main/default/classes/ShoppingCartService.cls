@@ -26,11 +26,10 @@ global with sharing class ShoppingCartService {
                 productItem.add(item);
                 total=total+(Integer)(item.get('Total'));
             }
-            system.debug(total);
             Id i=service().insertPurchase(total);
             service().insertPurchaseLineItem(i, productItem);
             system.debug(i);
-            return 'done';
+            return 'Done';
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
